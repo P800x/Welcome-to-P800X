@@ -4,7 +4,7 @@ To work on any P800X project, please follow the instructions below on setting up
 
 <hr />
 
-<h1>Installing Local P800X Development Server</h1>
+<h2>Installing Local P800X Development Server</h2>
 
 <ol>
 	<li>Download and Install Oracle VM VirtualBox
