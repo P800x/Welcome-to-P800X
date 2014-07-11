@@ -60,6 +60,14 @@ Version: Fedora (64-bit)
 			</li>
 
 			<li>Click "Create"</li>
+			
+			<li>Select your new VM</li>
+			
+			<li>Click "Settings"</li>
+			
+			<li>Navigate to "Network"</li>
+
+			<li>For the "Attached to:" field, select "Bridged Adapter"</li>
 
 			<p>Your VM is now setup with its' most basic settings.</p>
 		</ol>
@@ -138,7 +146,7 @@ Click "Write Changes to Disk"</pre>
 		</ol>
 	</li>
 
-	<li>When Fedora is done installing, click "Reboot", but quickly power the VM offer (before it boots again).</li>
+	<li>When Fedora is done installing, click "Reboot", but quickly power the VM off (before it boots again).</li>
 
 	<li>Open Oracle VM VirtualBox
 		<ol>
@@ -153,10 +161,6 @@ Click "Write Changes to Disk"</pre>
 			<li>Click the "Remove Attachment" icon</li>
 
 			<li>Click "Remove"</li>
-
-			<li>Navigate to "Network"</li>
-
-			<li>For the "Attached to:" field, select "Bridged Adapter"</li>
 
 			<li>Click "Ok"</li>
 
@@ -180,6 +184,14 @@ $ passwd 811trac
 
 Provide the password for your 811trac user, write it down!</pre></li>
 
+    <li>Load Apache on startup:
+        <pre>$ systemctl enable httpd.service</pre>
+    </li>
+    
+    <li>Start Apache:
+        <pre>$ /sbin/service httpd start</pre>
+    </li>
+
 	<li>Load MySQL on startup:
 		<pre>$ systemctl enable mysqld.service</pre></li>
 
@@ -194,10 +206,39 @@ Write it down!</pre></li>
 	<li>Install Git:
 		<pre>$ yum install -y git-core</pre>
 	</li>
+	
+	<p>Fedora has some strict firewall rules, so let's fix that.</p>
+	
+	<li>Create the iptables config file
+	    <pre>$ cd ~
+$ nano iptables.conf</pre>
 
-	<li>Logout of root
-		<pre>$ logout</pre>
+        <p>Copy this config file into the new iptables.conf file</p>
+        
+        <pre>*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [6227901:946342305]
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT</pre>
 	</li>
+	
+	<li>Load the iptables
+	    <pre>$ iptables-restore &lt; ~/iptables.conf</pre>
+	</li>
+	
+	<li>Save the iptables
+	    <pre>$ /usr/libexec/iptables.init save</pre>
+	</li>
+
+	<li>For the new iptables config to take effect, you must reboot the VM.</li>
 
 	<li>Login as 811trac
 
@@ -238,4 +279,17 @@ Write it down!</pre></li>
 	Open Oracle VM VirtualBox.
 
 	While holding shift, double click on your VM</dd>
+	
+	<br />
+	
+	<dt>To install node:</dt>
+	<dd><pre>$ yum install -y gcc-c++ make openssl-devel
+$ cd ~
+$ wget http://nodejs.org/dist/node-latest.tar.gz
+$ tar zxvf node-latest.tar.gz
+$ cd node-latest
+$ ./configure
+$ make
+$ make install
+</pre></dd>
 </dl>
