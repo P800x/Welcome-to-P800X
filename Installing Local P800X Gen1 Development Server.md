@@ -1,4 +1,4 @@
-<h1>Installing Local P800X Development Server</h1>
+<h1>Installing Local P800X Gen1 Development Server</h1>
 
 <ol>
 	<li>Download and Install Oracle VM VirtualBox
